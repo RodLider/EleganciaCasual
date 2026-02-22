@@ -1,486 +1,407 @@
-
+<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Estúdio de Estilo Masculino com IA</title>
-    <!-- Tailwind CSS -->
+    <title>Estúdio de Estilo Masculino IA</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <style>
-        .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
-        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 20px; }
-        .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root { font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .preview-glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(0.8); opacity: 0.5; }
+        }
+        .active-ring { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
-<body class="min-h-screen bg-[#f4f2ef] flex items-center justify-center p-4 md:p-8 font-sans text-slate-800">
+<body class="bg-[#f3f4f6] min-h-screen flex items-center justify-center p-4 md:p-6 lg:p-10">
 
-    <!-- Container Principal -->
-    <div class="max-w-6xl w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-stone-200">
+    <div class="max-w-6xl w-full bg-white rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col lg:flex-row border border-gray-200">
         
-        <!-- Lado Esquerdo: Imagem de Inspiração Original -->
-        <div class="lg:w-5/12 relative h-[250px] lg:h-auto bg-slate-200">
-            <img 
-                src="image.png" 
-                alt="Inspiração de moda masculina" 
-                class="absolute inset-0 w-full h-full object-cover"
-                onerror="this.src='https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?q=80&w=800&auto=format&fit=crop';"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+        <!-- Lado Esquerdo: Visualização -->
+        <div class="lg:w-1/2 relative min-h-[450px] bg-slate-100 flex flex-col">
             
-            <div class="absolute bottom-6 left-6 text-white">
-                <div class="flex items-center gap-2 mb-1">
-                    <i data-lucide="sparkles" class="w-5 h-5 text-amber-300"></i>
-                    <p class="text-xs font-bold tracking-widest uppercase text-amber-300">A Sua Referência</p>
+            <!-- Tabs Superior -->
+            <div class="absolute top-6 left-1/2 -translate-x-1/2 z-20 flex bg-white/50 backdrop-blur-md p-1.5 rounded-2xl shadow-lg border border-white/40">
+                <button onclick="setView('2d')" id="tab-2d" class="flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 bg-white text-indigo-600 shadow-sm">
+                    <i data-lucide="layout" class="w-4 h-4"></i> Draft
+                </button>
+                <button onclick="setView('ai')" id="tab-ai" class="flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 text-slate-500 hover:text-slate-800">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> Realista
+                </button>
+            </div>
+
+            <!-- Área de Preview 2D -->
+            <div id="preview-2d" class="flex-1 flex flex-col items-center justify-center relative transition-all duration-500 opacity-100">
+                <div class="absolute inset-0 opacity-[0.05]" style="background-image: radial-gradient(#4f46e5 1px, transparent 1px); background-size: 24px 24px;"></div>
+                
+                <div class="relative z-10 flex flex-col items-center scale-125 md:scale-[1.4] transition-transform duration-700">
+                    <!-- Shirt -->
+                    <svg width="100" height="100" viewBox="0 0 100 100" class="drop-shadow-2xl">
+                        <path id="svg-shirt" d="M25 25 L40 15 L50 20 L60 15 L75 25 L85 50 L75 55 L75 90 L25 90 L25 55 L15 50 Z" fill="#1e3a8a" class="transition-colors duration-500"/>
+                        <path d="M40 15 L50 26 L60 15 L50 20 Z" fill="rgba(0,0,0,0.1)"/>
+                        <line x1="50" y1="26" x2="50" y2="90" stroke="rgba(0,0,0,0.1)" stroke-width="1.5"/>
+                    </svg>
+                    <!-- Pants -->
+                    <svg width="80" height="110" viewBox="0 0 80 110" class="drop-shadow-xl -mt-1 relative z-[5]">
+                        <path id="svg-pants" d="M10 5 L70 5 L75 105 L45 105 L40 40 L35 105 L5 105 Z" fill="#d1d5db" class="transition-colors duration-500"/>
+                        <path d="M10 5 L70 5 L68 15 L12 15 Z" fill="rgba(0,0,0,0.05)"/>
+                    </svg>
+                    <!-- Shoes -->
+                    <div class="flex gap-4 -mt-2">
+                        <svg width="35" height="25" viewBox="0 0 40 30">
+                            <path id="svg-shoes-l" d="M5 25 C 5 15, 10 10, 35 10 C 38 10, 38 25, 38 25 Z" fill="#451a03" class="transition-colors duration-500" />
+                            <rect x="5" y="24" width="33" height="2.5" fill="rgba(0,0,0,0.3)" rx="1" />
+                        </svg>
+                        <svg width="35" height="25" viewBox="0 0 40 30" style="transform: scaleX(-1)">
+                            <path id="svg-shoes-r" d="M5 25 C 5 15, 10 10, 35 10 C 38 10, 38 25, 38 25 Z" fill="#451a03" class="transition-colors duration-500" />
+                            <rect x="5" y="24" width="33" height="2.5" fill="rgba(0,0,0,0.3)" rx="1" />
+                        </svg>
+                    </div>
                 </div>
-                <h2 class="text-2xl font-light">Elegância Casual</h2>
-                <p class="text-sm opacity-80 mt-1 max-w-[250px]">Utilize esta silhueta como inspiração para as combinações ao lado.</p>
+            </div>
+
+            <!-- Área de Preview AI (Hidden) -->
+            <div id="preview-ai" class="hidden flex-1 relative bg-slate-900 overflow-hidden">
+                <div id="ai-placeholder" class="absolute inset-0 flex flex-col items-center justify-center p-12 text-center text-white">
+                    <div class="w-20 h-20 bg-indigo-600/20 rounded-full flex items-center justify-center mb-6">
+                        <i data-lucide="wand-2" class="w-10 h-10 text-indigo-400"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Motor de Renderização IA</h3>
+                    <p class="text-slate-400 text-sm max-w-xs">Clique no botão abaixo para gerar uma fotografia realista baseada na sua configuração.</p>
+                </div>
+
+                <div id="ai-loading" class="hidden absolute inset-0 z-10 bg-slate-950/80 backdrop-blur-md flex flex-col items-center justify-center text-white">
+                    <div class="w-16 h-16 border-4 border-white/10 border-t-indigo-500 rounded-full animate-spin"></div>
+                    <p class="mt-6 font-bold tracking-widest uppercase animate-pulse">A gerar fotografia...</p>
+                </div>
+
+                <img id="ai-img" src="" class="hidden w-full h-full object-cover" alt="Resultado IA">
+                
+                <div id="ai-actions" class="hidden absolute bottom-6 right-6 flex gap-3">
+                    <button onclick="downloadImage()" class="p-4 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-2xl text-white transition-all">
+                        <i data-lucide="download" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="generateImage()" class="p-4 bg-indigo-600 hover:bg-indigo-500 rounded-2xl text-white shadow-xl transition-all">
+                        <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Info Bar Inferior -->
+            <div class="p-6 bg-white/50 backdrop-blur-md border-t border-gray-200 mt-auto flex justify-between items-center">
+                <div>
+                    <p class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 mb-1">Look Selecionado</p>
+                    <h4 id="summary-text" class="text-sm font-semibold text-slate-800">Casual Urbano</h4>
+                </div>
+                <button id="main-action-btn" onclick="generateImage()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-lg shadow-indigo-200 transition-all flex items-center gap-2">
+                    <i data-lucide="wand-2" class="w-4 h-4"></i> Gerar Agora
+                </button>
             </div>
         </div>
 
-        <!-- Lado Direito: Estúdio de Cores Interativo -->
-        <div class="lg:w-7/12 p-6 md:p-8 flex flex-col bg-[#faf9f8]">
+        <!-- Lado Direito: Controlos -->
+        <div class="lg:w-1/2 p-6 md:p-10 lg:p-12 overflow-y-auto max-h-screen scrollbar-hide">
             
-            <div class="mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
-                        <i data-lucide="palette" class="w-7 h-7 text-indigo-600"></i>
-                        Estúdio de Estilo
-                    </h1>
-                    <p class="text-sm text-slate-500 mt-1">Personalize e visualize a sua combinação.</p>
-                </div>
+            <header class="mb-10">
+                <h1 class="text-3xl font-extrabold tracking-tight text-slate-900 uppercase">Estúdio de Estilo</h1>
+                <p class="text-slate-500 mt-2 font-medium">Personalize cada detalhe da sua indumentária.</p>
+            </header>
 
-                <!-- Abas de Visualização -->
-                <div class="flex bg-slate-200 p-1 rounded-xl self-start shrink-0">
-                    <button id="btn-view-2d" class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-slate-800 shadow-sm" onclick="setViewMode('2d')">
-                        <i data-lucide="image" class="w-4 h-4"></i> 2D
-                    </button>
-                    <button id="btn-view-ai" class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-500 hover:text-slate-700" onclick="setViewMode('ai')">
-                        <i data-lucide="camera" class="w-4 h-4"></i> Realista (IA)
-                    </button>
-                </div>
+            <div class="space-y-10">
+                <!-- Shirt Section -->
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400">01. Parte Superior</label>
+                        <span id="label-shirt" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">Branco Oxford</span>
+                    </div>
+                    <div id="grid-shirt" class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"></div>
+                </section>
+
+                <!-- Pants Section -->
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400">02. Parte Inferior</label>
+                        <span id="label-pants" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">Cáqui Areia</span>
+                    </div>
+                    <div id="grid-pants" class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"></div>
+                </section>
+
+                <!-- Shoes Section -->
+                <section>
+                    <div class="flex justify-between items-center mb-4">
+                        <label class="text-[11px] font-bold uppercase tracking-widest text-slate-400">03. Calçado</label>
+                        <span id="label-shoes" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-lg">Couro Castanho</span>
+                    </div>
+                    <div id="grid-shoes" class="flex gap-4 overflow-x-auto pb-4 scrollbar-hide"></div>
+                </section>
             </div>
 
-            <!-- Área do Visor -->
-            <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 flex flex-col items-center justify-center min-h-[360px] mb-6 relative overflow-hidden">
-                
-                <!-- VISUALIZAÇÃO 2D -->
-                <div id="view-2d-container" class="w-full h-full flex flex-col items-center justify-center">
-                    <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 2px 2px, #000 1px, transparent 0); background-size: 20px 20px;"></div>
-                    <div class="flex flex-col items-center relative z-10 scale-110 mt-4">
-                        
-                        <!-- SVG Camisa -->
-                        <svg width="120" height="120" viewBox="0 0 100 100" class="transition-all duration-300 drop-shadow-md">
-                            <path class="svg-shirt-color" d="M25 25 L40 15 L50 20 L60 15 L75 25 L85 50 L75 55 L75 90 L25 90 L25 55 L15 50 Z" fill="#1e3a5f" />
-                            <path d="M40 15 L50 28 L60 15 L50 20 Z" fill="rgba(0,0,0,0.2)" />
-                            <path d="M25 25 L40 15 L50 20 L25 35 Z" fill="rgba(255,255,255,0.05)" />
-                            <line x1="50" y1="28" x2="50" y2="90" stroke="rgba(0,0,0,0.15)" stroke-width="2" />
-                            <circle cx="50" cy="45" r="1.5" fill="rgba(0,0,0,0.3)" />
-                            <circle cx="50" cy="60" r="1.5" fill="rgba(0,0,0,0.3)" />
-                            <circle cx="50" cy="75" r="1.5" fill="rgba(0,0,0,0.3)" />
-                        </svg>
-
-                        <!-- SVG Calça -->
-                        <svg width="96" height="132" viewBox="0 0 80 110" class="transition-all duration-300 drop-shadow-md z-10 -mt-2">
-                            <path class="svg-pants-color" d="M15 5 L65 5 L70 15 L10 15 Z" fill="#ece6da" />
-                            <path d="M15 5 L65 5 L70 15 L10 15 Z" fill="rgba(0,0,0,0.08)" />
-                            <path class="svg-pants-color" d="M10 15 L70 15 L75 105 L45 105 L40 40 L35 105 L5 105 Z" fill="#ece6da" />
-                            <line x1="40" y1="15" x2="40" y2="40" stroke="rgba(0,0,0,0.15)" stroke-width="2" />
-                            <line x1="25" y1="20" x2="25" y2="100" stroke="rgba(0,0,0,0.1)" stroke-width="1" />
-                            <line x1="55" y1="20" x2="55" y2="100" stroke="rgba(0,0,0,0.1)" stroke-width="1" />
-                        </svg>
-
-                        <!-- SVG Sapatos -->
-                        <div class="flex gap-5 pt-2">
-                            <svg width="42" height="54" viewBox="0 0 40 50" style="transform: rotate(-5deg)" class="transition-all duration-300 drop-shadow-md">
-                                <path class="svg-shoes-color" d="M12 5 C 12 5, 28 5, 28 12 L 32 38 C 32 46, 24 46, 20 46 C 16 46, 8 46, 8 38 L 12 12 Z" fill="#4a3020" />
-                                <path d="M12 12 C 16 20, 24 20, 28 12" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
-                                <path d="M16 20 L 24 20 L 22 26 L 18 26 Z" fill="rgba(0,0,0,0.15)"/>
-                                <path d="M8 38 C 8 46, 16 46, 20 46 C 24 46, 32 46, 32 38 L 33 38 C 33 48, 24 48, 20 48 C 16 48, 7 48, 7 38 Z" fill="#222" />
-                            </svg>
-                            <svg width="42" height="54" viewBox="0 0 40 50" style="transform: scaleX(-1) rotate(-5deg)" class="transition-all duration-300 drop-shadow-md">
-                                <path class="svg-shoes-color" d="M12 5 C 12 5, 28 5, 28 12 L 32 38 C 32 46, 24 46, 20 46 C 16 46, 8 46, 8 38 L 12 12 Z" fill="#4a3020" />
-                                <path d="M12 12 C 16 20, 24 20, 28 12" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="1.5"/>
-                                <path d="M16 20 L 24 20 L 22 26 L 18 26 Z" fill="rgba(0,0,0,0.15)"/>
-                                <path d="M8 38 C 8 46, 16 46, 20 46 C 24 46, 32 46, 32 38 L 33 38 C 33 48, 24 48, 20 48 C 16 48, 7 48, 7 38 Z" fill="#222" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- VISUALIZAÇÃO IA -->
-                <div id="view-ai-container" class="hidden w-full h-full flex flex-col items-center justify-center relative min-h-[320px]">
-                    
-                    <div id="ai-prompt-state" class="text-center p-6">
-                        <i data-lucide="camera" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
-                        <h3 class="text-lg font-semibold text-slate-700">Gerar Fotografia</h3>
-                        <p class="text-sm text-slate-500 mt-2 mb-6 max-w-[280px]">
-                            A nossa IA irá criar uma fotografia realista de um modelo a vestir as cores que selecionou em baixo.
-                        </p>
-                        <button onclick="generateRealisticPhoto()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium transition-colors shadow-md flex items-center gap-2 mx-auto">
-                            <i data-lucide="sparkles" class="w-4 h-4"></i> Gerar Foto Agora
-                        </button>
-                    </div>
-
-                    <div id="ai-image-state" class="hidden relative w-full h-full flex items-center justify-center">
-                        <div id="ai-loader" class="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl">
-                            <i data-lucide="loader-2" class="w-10 h-10 text-indigo-600 animate-spin mb-3"></i>
-                            <span class="text-sm font-medium text-slate-700 animate-pulse">A comunicar com a IA...</span>
-                        </div>
-
-                        <img id="ai-result-img" src="" alt="Look gerado por IA" class="max-h-[340px] rounded-2xl object-cover shadow-sm transition-opacity duration-500 opacity-0" />
-                        
-                        <div id="ai-actions" class="hidden absolute bottom-3 right-3 flex gap-2">
-                            <button onclick="handleDownloadImage()" class="bg-white/90 backdrop-blur text-slate-800 p-2.5 rounded-lg shadow-md hover:bg-indigo-50 hover:text-indigo-600 transition-colors" title="Guardar fotografia">
-                                <i data-lucide="download" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="generateRealisticPhoto()" class="bg-white/90 backdrop-blur text-slate-800 p-2.5 rounded-lg shadow-md hover:bg-white transition-colors" title="Gerar nova variação">
-                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Controles de Cores -->
-            <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-x-6 gap-y-2">
-                <div class="mb-5 w-full">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">1. Camisa</span>
-                        <span id="label-shirt" class="text-xs text-slate-500 bg-white border border-slate-200 px-2 py-1 rounded-md shadow-sm">Azul Marinho</span>
-                    </div>
-                    <div id="container-shirt" class="flex gap-2 sm:gap-3 flex-wrap max-h-32 overflow-y-auto p-1 scrollbar-thin"></div>
-                </div>
-
-                <div class="mb-5 w-full">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">2. Calça</span>
-                        <span id="label-pants" class="text-xs text-slate-500 bg-white border border-slate-200 px-2 py-1 rounded-md shadow-sm">Creme/Areia</span>
-                    </div>
-                    <div id="container-pants" class="flex gap-2 sm:gap-3 flex-wrap max-h-32 overflow-y-auto p-1 scrollbar-thin"></div>
-                </div>
-
-                <div class="mb-5 w-full">
-                    <div class="flex justify-between items-end mb-2">
-                        <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">3. Sapatos</span>
-                        <span id="label-shoes" class="text-xs text-slate-500 bg-white border border-slate-200 px-2 py-1 rounded-md shadow-sm">Marrom Escuro</span>
-                    </div>
-                    <div id="container-shoes" class="flex gap-2 sm:gap-3 flex-wrap max-h-32 overflow-y-auto p-1 scrollbar-thin"></div>
-                </div>
-            </div>
-
-            <div class="flex gap-3 mt-2 pt-5 border-t border-slate-200">
-                <button onclick="handleRandomize()" class="flex-1 flex items-center justify-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-3 rounded-xl font-medium transition-colors shadow-sm">
-                    <i data-lucide="shuffle" class="w-4 h-4"></i> Sortear Cores
+            <!-- Botões de Rodapé -->
+            <div class="mt-12 flex gap-4">
+                <button onclick="randomize()" class="flex-1 flex items-center justify-center gap-2 py-4 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-2xl font-bold transition-all active:scale-95">
+                    <i data-lucide="shuffle" class="w-4 h-4"></i> Random
                 </button>
-                <button onclick="handleCopyPalette()" class="flex-1 flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white py-3 rounded-xl font-medium transition-colors shadow-md">
+                <button onclick="copyLook()" class="flex-[2] flex items-center justify-center gap-2 py-4 bg-slate-900 hover:bg-black text-white rounded-2xl font-bold transition-all active:scale-95 shadow-xl shadow-slate-200">
                     <i data-lucide="copy" class="w-4 h-4"></i> Copiar Look
                 </button>
             </div>
-
         </div>
     </div>
 
-    <!-- Notificação Toast -->
-    <div id="toast" class="hidden fixed bottom-6 right-6 z-50 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 transition-opacity duration-300 opacity-0">
-        <i data-lucide="check" class="w-5 h-5 text-emerald-400"></i>
-        <span id="toast-message" class="font-medium">Mensagem</span>
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] transform translate-y-32 opacity-0 transition-all duration-500 pointer-events-none">
+        <div class="bg-slate-900 text-white px-8 py-4 rounded-3xl shadow-2xl flex items-center gap-3">
+            <i data-lucide="info" class="w-5 h-5 text-indigo-400"></i>
+            <span id="toast-msg" class="text-sm font-bold uppercase tracking-wider">Ação concluída</span>
+        </div>
     </div>
 
     <script>
-        const tonsDePretoAzulCinza = [
-            { id: 'black', name: 'Preto', en: 'black', hex: '#111111' },
-            { id: 'absoluteblack', name: 'Preto Absoluto', en: 'pitch black', hex: '#000000' },
-            { id: 'deepblack', name: 'Preto Profundo', en: 'deep black', hex: '#0a0a0a' },
-            { id: 'onyx', name: 'Preto Ônix', en: 'onyx black', hex: '#353839' },
-            { id: 'matteblack', name: 'Preto Fosco', en: 'matte black', hex: '#28282b' },
-            { id: 'glossyblack', name: 'Preto Brilhante', en: 'glossy black', hex: '#1a1a1a' },
-            { id: 'blue', name: 'Azul', en: 'blue', hex: '#2563eb' },
-            { id: 'royalblue', name: 'Azul Royal', en: 'royal blue', hex: '#4169e1' },
-            { id: 'navy', name: 'Azul Marinho', en: 'navy blue', hex: '#1e3a5f' },
-            { id: 'skyblue', name: 'Azul Céu', en: 'sky blue', hex: '#87ceeb' },
-            { id: 'turquoise', name: 'Azul Turquesa', en: 'turquoise blue', hex: '#40e0d0' },
-            { id: 'petrol', name: 'Azul Petróleo', en: 'petrol blue', hex: '#005f69' },
-            { id: 'bic', name: 'Azul Bic', en: 'cobalt blue', hex: '#0047ab' },
-            { id: 'sapphire', name: 'Azul Safira', en: 'sapphire blue', hex: '#0f52ba' },
-            { id: 'grey', name: 'Cinza', en: 'grey', hex: '#888f98' },
-            { id: 'lightgrey', name: 'Cinza Claro', en: 'light grey', hex: '#d3d3d3' },
-            { id: 'darkgrey', name: 'Cinza Escuro', en: 'dark grey', hex: '#4b5563' },
-            { id: 'mediumgrey', name: 'Cinza Médio', en: 'medium grey', hex: '#9ca3af' },
-            { id: 'graphite', name: 'Cinza Grafite', en: 'graphite grey', hex: '#4b4b4b' },
-            { id: 'charcoal', name: 'Cinza Chumbo', en: 'charcoal grey', hex: '#36454f' },
-            { id: 'silver', name: 'Cinza Prata', en: 'silver grey', hex: '#c0c0c0' },
-            { id: 'smoke', name: 'Cinza Fumaça', en: 'smoke grey', hex: '#708090' },
+        const apiKey = ""; 
+
+        // Paleta Completa Baseada no Pedido
+        const BASE_COLORS = [
+            // Pretos
+            { id: 'black', name: 'Preto', hex: '#111111', prompt: 'classic matte black' },
+            { id: 'abs_black', name: 'Preto Absoluto', hex: '#000000', prompt: 'absolute pitch black' },
+            { id: 'deep_black', name: 'Preto Profundo', hex: '#050505', prompt: 'deep intense black' },
+            { id: 'onyx', name: 'Preto Ônix', hex: '#353839', prompt: 'onyx black carbon texture' },
+            { id: 'matte_black', name: 'Preto Fosco', hex: '#28282b', prompt: 'matte finish deep black' },
+            { id: 'gloss_black', name: 'Preto Brilhante', hex: '#1a1a1a', prompt: 'glossy reflective black' },
+            // Azuis
+            { id: 'blue', name: 'Azul', hex: '#2563eb', prompt: 'vibrant blue' },
+            { id: 'royal_blue', name: 'Azul Royal', hex: '#4169e1', prompt: 'rich royal blue' },
+            { id: 'navy', name: 'Azul Marinho', hex: '#1e3a5f', prompt: 'dark navy blue' },
+            { id: 'sky_blue', name: 'Azul Céu', hex: '#87ceeb', prompt: 'soft sky blue' },
+            { id: 'turquoise', name: 'Azul Turquesa', hex: '#40e0d0', prompt: 'turquoise blue' },
+            { id: 'petrol', name: 'Azul Petróleo', hex: '#005f69', prompt: 'dark petrol blue-green' },
+            { id: 'cobalt', name: 'Azul Bic', hex: '#0047ab', prompt: 'cobalt bic blue' },
+            { id: 'sapphire', name: 'Azul Safira', hex: '#0f52ba', prompt: 'sapphire gemstone blue' },
+            // Cinzas
+            { id: 'grey', name: 'Cinza', hex: '#888f98', prompt: 'classic grey' },
+            { id: 'light_grey', name: 'Cinza Claro', hex: '#d3d3d3', prompt: 'light heather grey' },
+            { id: 'dark_grey', name: 'Cinza Escuro', hex: '#4b5563', prompt: 'dark slate grey' },
+            { id: 'med_grey', name: 'Cinza Médio', hex: '#9ca3af', prompt: 'medium neutral grey' },
+            { id: 'graphite', name: 'Cinza Grafite', hex: '#4b4b4b', prompt: 'dark graphite grey' },
+            { id: 'charcoal', name: 'Cinza Chumbo', hex: '#36454f', prompt: 'deep charcoal charcoal grey' },
+            { id: 'silver', name: 'Cinza Prata', hex: '#c0c0c0', prompt: 'metallic silver grey' },
+            { id: 'smoke', name: 'Cinza Fumaça', hex: '#708090', prompt: 'smoke grey blue-toned' }
         ];
 
-        const shirtColors = [
-            { id: 'white', name: 'Branco', en: 'white', hex: '#f8fafc' },
-            { id: 'burgundy', name: 'Vinho', en: 'burgundy', hex: '#631c26' },
-            { id: 'olive', name: 'Verde Oliva', en: 'olive green', hex: '#44533c' },
-            { id: 'pink', name: 'Rosa Claro', en: 'light pink', hex: '#fbcfe8' },
-            { id: 'mustard', name: 'Mostarda', en: 'mustard yellow', hex: '#d97706' },
-            { id: 'mint', name: 'Verde Menta', en: 'mint green', hex: '#a7f3d0' },
-            ...tonsDePretoAzulCinza
-        ];
+        const CONFIG = {
+            shirt: [
+                { id: 'white', name: 'Branco Oxford', hex: '#FFFFFF', prompt: 'crisp white luxury cotton shirt' },
+                ...BASE_COLORS,
+                { id: 'sage', name: 'Verde Sálvia', hex: '#a7f3d0', prompt: 'sage green linen' },
+                { id: 'burgundy', name: 'Vinho Tinto', hex: '#7f1d1d', prompt: 'burgundy wool' }
+            ],
+            pants: [
+                { id: 'khaki', name: 'Cáqui Areia', hex: '#d6d3d1', prompt: 'khaki sand chinos' },
+                ...BASE_COLORS,
+                { id: 'denim', name: 'Jeans Indigo', hex: '#1d4ed8', prompt: 'dark indigo denim' }
+            ],
+            shoes: [
+                { id: 'brown', name: 'Couro Castanho', hex: '#451a03', prompt: 'dark brown leather' },
+                ...BASE_COLORS,
+                { id: 'white-s', name: 'Sneakers Brancos', hex: '#f8fafc', prompt: 'white leather sneakers' }
+            ]
+        };
 
-        const pantsColors = [
-            { id: 'cream', name: 'Creme/Areia', en: 'cream', hex: '#ece6da' },
-            { id: 'khaki', name: 'Caqui', en: 'khaki', hex: '#cbb89b' },
-            { id: 'olive', name: 'Verde Oliva', en: 'olive green', hex: '#4d533c' },
-            { id: 'brown', name: 'Marrom', en: 'brown', hex: '#5c4033' },
-            ...tonsDePretoAzulCinza
-        ];
+        let state = {
+            shirt: CONFIG.shirt[0],
+            pants: CONFIG.pants[0],
+            shoes: CONFIG.shoes[0],
+            view: '2d',
+            isGenerating: false,
+            lastImage: null
+        };
 
-        const shoesColors = [
-            { id: 'brown', name: 'Marrom Escuro', en: 'dark brown', hex: '#4a3020' },
-            { id: 'tan', name: 'Caramelo', en: 'tan', hex: '#a67b5b' },
-            { id: 'oxblood', name: 'Bordô', en: 'oxblood', hex: '#4a1c1c' },
-            { id: 'white', name: 'Branco', en: 'white sneakers', hex: '#f8fafc' },
-            ...tonsDePretoAzulCinza
-        ];
-
-        let currentShirt = shirtColors.find(c => c.id === 'navy') || shirtColors[0];
-        let currentPants = pantsColors.find(c => c.id === 'cream') || pantsColors[0];
-        let currentShoes = shoesColors.find(c => c.id === 'brown') || shoesColors[0];
-        let currentAiImageUrl = null;
-        
-        const apiKey = ""; // Chave segura
-
-        function isLight(hex) {
-            const c = hex.substring(1);
-            const rgb = parseInt(c, 16);
-            const r = (rgb >> 16) & 0xff;
-            const g = (rgb >> 8) & 0xff;
-            const b = (rgb >> 0) & 0xff;
-            const luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-            return luma > 150;
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').textContent = message;
-            
-            toast.classList.remove('hidden');
-            setTimeout(() => toast.classList.remove('opacity-0'), 10);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0');
-                setTimeout(() => toast.classList.add('hidden'), 300);
-            }, 3000);
-        }
-
-        function updateSVGColors() {
-            document.querySelectorAll('.svg-shirt-color').forEach(el => el.setAttribute('fill', currentShirt.hex));
-            document.querySelectorAll('.svg-pants-color').forEach(el => el.setAttribute('fill', currentPants.hex));
-            document.querySelectorAll('.svg-shoes-color').forEach(el => el.setAttribute('fill', currentShoes.hex));
-            
-            document.getElementById('label-shirt').textContent = currentShirt.name;
-            document.getElementById('label-pants').textContent = currentPants.name;
-            document.getElementById('label-shoes').textContent = currentShoes.name;
+        function init() {
+            lucide.createIcons();
+            renderSelectors();
+            updateUI();
         }
 
         function renderSelectors() {
-            const createSelector = (containerId, options, selectedColor, type) => {
-                const container = document.getElementById(containerId);
+            ['shirt', 'pants', 'shoes'].forEach(type => {
+                const container = document.getElementById(`grid-${type}`);
                 container.innerHTML = '';
                 
-                options.forEach(opt => {
-                    const isSelected = selectedColor.id === opt.id;
-                    const light = isLight(opt.hex);
+                CONFIG[type].forEach(item => {
+                    const isActive = state[type].id === item.id;
                     const btn = document.createElement('button');
-                    
-                    let classes = 'w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none ';
-                    
-                    if (isSelected) {
-                        classes += 'ring-2 ring-offset-2 ring-slate-800 scale-110 shadow-md';
-                        const checkColor = light ? 'text-slate-800' : 'text-white';
-                        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4 sm:w-5 sm:h-5 ${checkColor}"></i>`;
-                    } else {
-                        classes += 'hover:scale-105 hover:shadow-sm border border-slate-300';
-                    }
-                    
-                    btn.className = classes;
-                    btn.style.backgroundColor = opt.hex;
-                    btn.title = opt.name;
-                    
+                    btn.className = `w-14 h-14 rounded-2xl border-4 shrink-0 transition-all duration-300 transform hover:scale-110 active:scale-90 ${isActive ? 'border-indigo-600 scale-105 shadow-lg active-ring' : 'border-white shadow-sm'}`;
+                    btn.style.backgroundColor = item.hex;
+                    btn.title = item.name;
                     btn.onclick = () => {
-                        if (type === 'shirt') currentShirt = opt;
-                        if (type === 'pants') currentPants = opt;
-                        if (type === 'shoes') currentShoes = opt;
-                        
-                        resetAiImageState();
-                        updateSVGColors();
+                        state[type] = item;
+                        updateUI();
                         renderSelectors();
+                        if(state.view === 'ai') resetAiView();
                     };
-                    
                     container.appendChild(btn);
                 });
-            };
-
-            createSelector('container-shirt', shirtColors, currentShirt, 'shirt');
-            createSelector('container-pants', pantsColors, currentPants, 'pants');
-            createSelector('container-shoes', shoesColors, currentShoes, 'shoes');
-            lucide.createIcons();
+            });
         }
 
-        function setViewMode(mode) {
-            const btn2d = document.getElementById('btn-view-2d');
-            const btnAi = document.getElementById('btn-view-ai');
-            const view2d = document.getElementById('view-2d-container');
-            const viewAi = document.getElementById('view-ai-container');
+        function updateUI() {
+            document.getElementById('label-shirt').innerText = state.shirt.name;
+            document.getElementById('label-pants').innerText = state.pants.name;
+            document.getElementById('label-shoes').innerText = state.shoes.name;
+            document.getElementById('summary-text').innerText = `${state.shirt.name} + ${state.pants.name}`;
+
+            document.getElementById('svg-shirt').style.fill = state.shirt.hex;
+            document.getElementById('svg-pants').style.fill = state.pants.hex;
+            document.getElementById('svg-shoes-l').style.fill = state.shoes.hex;
+            document.getElementById('svg-shoes-r').style.fill = state.shoes.hex;
+        }
+
+        function setView(mode) {
+            state.view = mode;
+            const tab2d = document.getElementById('tab-2d');
+            const tabAi = document.getElementById('tab-ai');
+            const preview2d = document.getElementById('preview-2d');
+            const previewAi = document.getElementById('preview-ai');
+            const mainActionBtn = document.getElementById('main-action-btn');
 
             if (mode === '2d') {
-                btn2d.className = 'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all bg-white text-slate-800 shadow-sm';
-                btnAi.className = 'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-500 hover:text-slate-700';
-                view2d.classList.remove('hidden');
-                viewAi.classList.add('hidden');
+                tab2d.className = 'flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 bg-white text-indigo-600 shadow-sm';
+                tabAi.className = 'flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 text-slate-500 hover:text-slate-800';
+                preview2d.classList.remove('hidden');
+                previewAi.classList.add('hidden');
+                mainActionBtn.classList.add('hidden');
             } else {
-                btnAi.className = 'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all bg-indigo-600 text-white shadow-sm';
-                btn2d.className = 'flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all text-slate-500 hover:text-slate-700';
-                viewAi.classList.remove('hidden');
-                view2d.classList.add('hidden');
+                tabAi.className = 'flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 bg-white text-indigo-600 shadow-sm';
+                tab2d.className = 'flex items-center gap-2 px-6 py-2.5 text-sm font-bold rounded-xl transition-all duration-300 text-slate-500 hover:text-slate-800';
+                previewAi.classList.remove('hidden');
+                preview2d.classList.add('hidden');
+                mainActionBtn.classList.remove('hidden');
             }
         }
 
-        function resetAiImageState() {
-            currentAiImageUrl = null;
-            document.getElementById('ai-prompt-state').classList.remove('hidden');
-            document.getElementById('ai-image-state').classList.add('hidden');
-            const imgEl = document.getElementById('ai-result-img');
-            imgEl.src = '';
-            imgEl.classList.remove('opacity-100');
-            imgEl.classList.add('opacity-0');
-        }
-
-        function handleRandomize() {
-            currentShirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
-            currentPants = pantsColors[Math.floor(Math.random() * pantsColors.length)];
-            currentShoes = shoesColors[Math.floor(Math.random() * shoesColors.length)];
-            
-            resetAiImageState();
-            updateSVGColors();
-            renderSelectors();
-        }
-
-        function handleCopyPalette() {
-            const text = `O Meu Look: Camisa ${currentShirt.name}, Calça ${currentPants.name}, Sapatos ${currentShoes.name}.`;
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            showToast('Combinação copiada com sucesso!');
-        }
-
-        async function generateRealisticPhoto() {
-            document.getElementById('ai-prompt-state').classList.add('hidden');
-            document.getElementById('ai-image-state').classList.remove('hidden');
-            document.getElementById('ai-loader').classList.remove('hidden');
+        function resetAiView() {
+            document.getElementById('ai-img').classList.add('hidden');
+            document.getElementById('ai-placeholder').classList.remove('hidden');
             document.getElementById('ai-actions').classList.add('hidden');
+            state.lastImage = null;
+        }
+
+        async function generateImage() {
+            if (state.isGenerating) return;
             
-            const imgEl = document.getElementById('ai-result-img');
-            imgEl.classList.remove('opacity-100');
-            imgEl.classList.add('opacity-0');
-            imgEl.src = ''; // Limpa imagem anterior
+            setView('ai');
+            state.isGenerating = true;
+            const loader = document.getElementById('ai-loading');
+            const imgEl = document.getElementById('ai-img');
+            const placeholder = document.getElementById('ai-placeholder');
+            const actions = document.getElementById('ai-actions');
 
-            // Prompt seguro e direto para os filtros da IA
-            const promptText = `Fashion photography, a model wearing a ${currentShirt.en} shirt, ${currentPants.en} pants, and ${currentShoes.en} shoes. Plain studio background, full body shot, photorealistic, 8k.`;
+            loader.classList.remove('hidden');
+            imgEl.classList.add('hidden');
+            placeholder.classList.add('hidden');
+            actions.classList.add('hidden');
 
-            const fetchImage = async (retries = 5, delay = 1000) => {
+            const prompt = `Hyper-realistic professional fashion street photography of the man from the reference image, walking on a european cobblestone street in front of classic buildings. He wears a ${state.shirt.prompt} button-up shirt with rolled sleeves, ${state.pants.prompt} pleated chinos, and ${state.shoes.prompt} loafers. The lighting is golden hour, shot on a Sony A7R IV, 8k resolution.`;
+
+            const makeRequest = async () => {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instances: [{ prompt }],
+                        parameters: { sampleCount: 1 }
+                    })
+                });
+
+                if (!response.ok) throw new Error('API_FAIL');
+                const data = await response.json();
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            };
+
+            const runWithRetry = async (retries = 5, delay = 1000) => {
                 try {
-                    // Verificação para sites publicados (GitHub Pages, etc) onde a chave da API não está presente
-                    if (!apiKey || apiKey.trim() === "") {
-                        const seed = Math.floor(Math.random() * 1000000);
-                        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=600&height=800&nologo=true&seed=${seed}`;
-                        
-                        // Pré-carrega a imagem usando o servidor público
-                        const res = await fetch(fallbackUrl);
-                        if (!res.ok) throw new Error('Servidor de fallback indisponível');
-                        const blob = await res.blob();
-                        return URL.createObjectURL(blob);
-                    }
-
-                    // Ambiente seguro com chave
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            instances: { prompt: promptText },
-                            parameters: { sampleCount: 1 }
-                        })
-                    });
-
-                    const result = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(result.error?.message || 'Falha na resposta da API');
-                    }
-                    
-                    if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
-                        return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
-                    } else {
-                        throw new Error('Sem imagem retornada pelo servidor');
-                    }
-                } catch (error) {
+                    return await makeRequest();
+                } catch (err) {
                     if (retries > 0) {
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        return fetchImage(retries - 1, delay * 2);
+                        await new Promise(r => setTimeout(r, delay));
+                        return runWithRetry(retries - 1, delay * 2);
                     }
-                    throw error;
+                    throw err;
                 }
             };
 
             try {
-                const url = await fetchImage();
-                currentAiImageUrl = url;
-                
-                // Só mostra as opções de download quando a imagem terminar de carregar no ecrã
+                const imageUrl = await runWithRetry();
+                state.lastImage = imageUrl;
+                imgEl.src = imageUrl;
                 imgEl.onload = () => {
-                    document.getElementById('ai-loader').classList.add('hidden');
-                    imgEl.classList.remove('opacity-0');
-                    imgEl.classList.add('opacity-100');
-                    document.getElementById('ai-actions').classList.remove('hidden');
+                    loader.classList.add('hidden');
+                    imgEl.classList.remove('hidden');
+                    actions.classList.remove('hidden');
                 };
-
-                // Proteção caso os dados base64 venham corrompidos
-                imgEl.onerror = () => {
-                    resetAiImageState();
-                    showToast("Erro ao processar a imagem. Tente novamente.");
-                };
-
-                imgEl.src = url;
-            } catch (error) {
-                console.error("Detalhes do erro da IA:", error);
-                resetAiImageState();
-                showToast("Erro de ligação. O servidor pode estar ocupado, tente novamente.");
+            } catch (err) {
+                showToast("Erro na ligação à IA. Tente novamente.");
+                loader.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            } finally {
+                state.isGenerating = false;
             }
         }
 
-        function handleDownloadImage() {
-            if (!currentAiImageUrl) return;
-            const link = document.createElement('a');
-            link.href = currentAiImageUrl;
-            link.download = `meu-look-${currentShirt.id}-${currentPants.id}-${currentShoes.id}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast('Fotografia guardada com sucesso!');
+        function randomize() {
+            state.shirt = CONFIG.shirt[Math.floor(Math.random() * CONFIG.shirt.length)];
+            state.pants = CONFIG.pants[Math.floor(Math.random() * CONFIG.pants.length)];
+            state.shoes = CONFIG.shoes[Math.floor(Math.random() * CONFIG.shoes.length)];
+            updateUI();
+            renderSelectors();
+            showToast("Estilo baralhado!");
         }
 
-        // Inicializar aplicação
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-            updateSVGColors();
-            renderSelectors();
-        });
+        function copyLook() {
+            const text = `Meu Look IA:\nPeça Superior: ${state.shirt.name}\nPeça Inferior: ${state.pants.name}\nCalçado: ${state.shoes.name}`;
+            const el = document.createElement('textarea');
+            el.value = text;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            showToast("Look copiado para o clipboard!");
+        }
+
+        function downloadImage() {
+            if (!state.lastImage) return;
+            const a = document.createElement('a');
+            a.href = state.lastImage;
+            a.download = `look-masculino-${Date.now()}.png`;
+            a.click();
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32', 'opacity-0');
+            }, 3000);
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
-
-
 
