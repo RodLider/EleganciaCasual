@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
@@ -10,22 +10,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <style>
-        /* Estilos personalizados para a barra de rolagem */
-        .scrollbar-thin::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        .scrollbar-thin::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-            background-color: #e2e8f0;
-            border-radius: 20px;
-        }
-        .scrollbar-thin {
-            scrollbar-width: thin;
-            scrollbar-color: #e2e8f0 transparent;
-        }
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 20px; }
+        .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #e2e8f0 transparent; }
     </style>
 </head>
 <body class="min-h-screen bg-[#f4f2ef] flex items-center justify-center p-4 md:p-8 font-sans text-slate-800">
@@ -76,7 +64,7 @@
                 </div>
             </div>
 
-            <!-- Área do Visor (Manequim 2D ou Foto IA) -->
+            <!-- Área do Visor -->
             <div class="bg-white rounded-3xl p-4 shadow-sm border border-slate-200 flex flex-col items-center justify-center min-h-[360px] mb-6 relative overflow-hidden">
                 
                 <!-- VISUALIZAÇÃO 2D -->
@@ -126,7 +114,6 @@
                 <!-- VISUALIZAÇÃO IA -->
                 <div id="view-ai-container" class="hidden w-full h-full flex flex-col items-center justify-center relative min-h-[320px]">
                     
-                    <!-- Estado Inicial (Sem imagem) -->
                     <div id="ai-prompt-state" class="text-center p-6">
                         <i data-lucide="camera" class="w-12 h-12 text-slate-300 mx-auto mb-3"></i>
                         <h3 class="text-lg font-semibold text-slate-700">Gerar Fotografia</h3>
@@ -138,12 +125,10 @@
                         </button>
                     </div>
 
-                    <!-- Estado A Gerar & Imagem Pronta -->
                     <div id="ai-image-state" class="hidden relative w-full h-full flex items-center justify-center">
-                        
                         <div id="ai-loader" class="absolute inset-0 z-20 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl">
                             <i data-lucide="loader-2" class="w-10 h-10 text-indigo-600 animate-spin mb-3"></i>
-                            <span class="text-sm font-medium text-slate-700 animate-pulse">A gerar fotografia realista...</span>
+                            <span class="text-sm font-medium text-slate-700 animate-pulse">A comunicar com a IA...</span>
                         </div>
 
                         <img id="ai-result-img" src="" alt="Look gerado por IA" class="max-h-[340px] rounded-2xl object-cover shadow-sm transition-opacity duration-500 opacity-0" />
@@ -161,9 +146,8 @@
 
             </div>
 
-            <!-- Controles de Cores (Gerados dinamicamente via JS) -->
+            <!-- Controles de Cores -->
             <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-3 gap-x-6 gap-y-2">
-                
                 <div class="mb-5 w-full">
                     <div class="flex justify-between items-end mb-2">
                         <span class="text-sm font-semibold text-slate-700 uppercase tracking-wide">1. Camisa</span>
@@ -187,10 +171,8 @@
                     </div>
                     <div id="container-shoes" class="flex gap-2 sm:gap-3 flex-wrap max-h-32 overflow-y-auto p-1 scrollbar-thin"></div>
                 </div>
-
             </div>
 
-            <!-- Botões de Ação -->
             <div class="flex gap-3 mt-2 pt-5 border-t border-slate-200">
                 <button onclick="handleRandomize()" class="flex-1 flex items-center justify-center gap-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 py-3 rounded-xl font-medium transition-colors shadow-sm">
                     <i data-lucide="shuffle" class="w-4 h-4"></i> Sortear Cores
@@ -210,7 +192,6 @@
     </div>
 
     <script>
-        // --- DADOS DAS CORES ---
         const tonsDePretoAzulCinza = [
             { id: 'black', name: 'Preto', en: 'black', hex: '#111111' },
             { id: 'absoluteblack', name: 'Preto Absoluto', en: 'pitch black', hex: '#000000' },
@@ -262,14 +243,13 @@
             ...tonsDePretoAzulCinza
         ];
 
-        // --- ESTADO DA APLICAÇÃO ---
         let currentShirt = shirtColors.find(c => c.id === 'navy') || shirtColors[0];
         let currentPants = pantsColors.find(c => c.id === 'cream') || pantsColors[0];
         let currentShoes = shoesColors.find(c => c.id === 'brown') || shoesColors[0];
         let currentAiImageUrl = null;
-        const apiKey = ""; // A chave é injetada automaticamente pelo ambiente
+        
+        const apiKey = ""; // Chave segura
 
-        // --- FUNÇÕES UTILITÁRIAS ---
         function isLight(hex) {
             const c = hex.substring(1);
             const rgb = parseInt(c, 16);
@@ -293,7 +273,6 @@
             }, 3000);
         }
 
-        // --- ATUALIZAÇÃO DA INTERFACE ---
         function updateSVGColors() {
             document.querySelectorAll('.svg-shirt-color').forEach(el => el.setAttribute('fill', currentShirt.hex));
             document.querySelectorAll('.svg-pants-color').forEach(el => el.setAttribute('fill', currentPants.hex));
@@ -314,7 +293,6 @@
                     const light = isLight(opt.hex);
                     const btn = document.createElement('button');
                     
-                    // Base classes
                     let classes = 'w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-full flex items-center justify-center transition-all duration-300 focus:outline-none ';
                     
                     if (isSelected) {
@@ -346,8 +324,6 @@
             createSelector('container-shirt', shirtColors, currentShirt, 'shirt');
             createSelector('container-pants', pantsColors, currentPants, 'pants');
             createSelector('container-shoes', shoesColors, currentShoes, 'shoes');
-            
-            // Re-inicializa os ícones após alterar o DOM
             lucide.createIcons();
         }
 
@@ -380,7 +356,6 @@
             imgEl.classList.add('opacity-0');
         }
 
-        // --- AÇÕES PRINCIPAIS ---
         function handleRandomize() {
             currentShirt = shirtColors[Math.floor(Math.random() * shirtColors.length)];
             currentPants = pantsColors[Math.floor(Math.random() * pantsColors.length)];
@@ -393,14 +368,12 @@
 
         function handleCopyPalette() {
             const text = `O Meu Look: Camisa ${currentShirt.name}, Calça ${currentPants.name}, Sapatos ${currentShoes.name}.`;
-            
             const textArea = document.createElement("textarea");
             textArea.value = text;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand("copy");
             document.body.removeChild(textArea);
-
             showToast('Combinação copiada com sucesso!');
         }
 
@@ -413,8 +386,10 @@
             const imgEl = document.getElementById('ai-result-img');
             imgEl.classList.remove('opacity-100');
             imgEl.classList.add('opacity-0');
+            imgEl.src = ''; // Limpa imagem anterior
 
-            const promptText = `handsome man male model wearing ${currentShirt.en} button-down shirt and ${currentPants.en} tailored trousers and ${currentShoes.en} leather shoes, full body, plain studio background, fashion photography, photorealistic, 8k, elegant styling`;
+            // Prompt seguro e direto para os filtros da IA
+            const promptText = `Fashion photography, a model wearing a ${currentShirt.en} shirt, ${currentPants.en} pants, and ${currentShoes.en} shoes. Plain studio background, full body shot, photorealistic, 8k.`;
 
             const fetchImage = async (retries = 5, delay = 1000) => {
                 try {
@@ -427,14 +402,17 @@
                         })
                     });
 
-                    if (!response.ok) throw new Error('Falha na resposta da API');
-                    
                     const result = await response.json();
-                    const base64Image = result.predictions?.[0]?.bytesBase64Encoded;
+
+                    if (!response.ok) {
+                        throw new Error(result.error?.message || 'Falha na resposta da API');
+                    }
                     
-                    if (!base64Image) throw new Error('Sem dados de imagem');
-                    
-                    return `data:image/png;base64,${base64Image}`;
+                    if (result.predictions && result.predictions[0] && result.predictions[0].bytesBase64Encoded) {
+                        return `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                    } else {
+                        throw new Error('Sem imagem retornada pelo servidor');
+                    }
                 } catch (error) {
                     if (retries > 0) {
                         await new Promise(resolve => setTimeout(resolve, delay));
@@ -448,40 +426,47 @@
                 const url = await fetchImage();
                 currentAiImageUrl = url;
                 
-                imgEl.src = url;
+                // Só mostra as opções de download quando a imagem terminar de carregar no ecrã
                 imgEl.onload = () => {
                     document.getElementById('ai-loader').classList.add('hidden');
                     imgEl.classList.remove('opacity-0');
                     imgEl.classList.add('opacity-100');
                     document.getElementById('ai-actions').classList.remove('hidden');
                 };
+
+                // Proteção caso os dados base64 venham corrompidos
+                imgEl.onerror = () => {
+                    resetAiImageState();
+                    showToast("Erro ao processar a imagem. Tente novamente.");
+                };
+
+                imgEl.src = url;
             } catch (error) {
+                console.error("Detalhes do erro da IA:", error);
                 resetAiImageState();
-                showToast("Erro ao gerar imagem. Tente novamente.");
+                showToast("Erro de ligação. O servidor pode estar ocupado, tente novamente.");
             }
         }
 
         function handleDownloadImage() {
             if (!currentAiImageUrl) return;
-            
             const link = document.createElement('a');
             link.href = currentAiImageUrl;
             link.download = `meu-look-${currentShirt.id}-${currentPants.id}-${currentShoes.id}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
             showToast('Fotografia guardada com sucesso!');
         }
 
-        // Inicialização
+        // Inicializar aplicação
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
             updateSVGColors();
             renderSelectors();
         });
-
     </script>
 </body>
 </html>
+
 
