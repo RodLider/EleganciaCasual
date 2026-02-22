@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
@@ -393,6 +393,19 @@
 
             const fetchImage = async (retries = 5, delay = 1000) => {
                 try {
+                    // Verificação para sites publicados (GitHub Pages, etc) onde a chave da API não está presente
+                    if (!apiKey || apiKey.trim() === "") {
+                        const seed = Math.floor(Math.random() * 1000000);
+                        const fallbackUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(promptText)}?width=600&height=800&nologo=true&seed=${seed}`;
+                        
+                        // Pré-carrega a imagem usando o servidor público
+                        const res = await fetch(fallbackUrl);
+                        if (!res.ok) throw new Error('Servidor de fallback indisponível');
+                        const blob = await res.blob();
+                        return URL.createObjectURL(blob);
+                    }
+
+                    // Ambiente seguro com chave
                     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -468,5 +481,6 @@
     </script>
 </body>
 </html>
+
 
 
